@@ -7,9 +7,12 @@ var _angular2 = _interopRequireDefault(_angular);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_angular2.default.module('olympics', []).controller('sportsController', function () {
+_angular2.default.module('olympics', []).controller('sportsController', function ($http) {
   var vm = this;
-  vm.sports = ["Weightlifting", "Cycling"];
+  // vm.sports = ["Weightlifting", "Cycling"];
+  $http.get('/sports').then(function (response) {
+    vm.sports = response.data;
+  });
 });
 
 },{"angular":3}],2:[function(require,module,exports){
