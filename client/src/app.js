@@ -1,9 +1,50 @@
-import angular from 'angular';
-angular.module('olympics', [])
-.controller('sportsController', function($http){
-  var vm = this;
-  // vm.sports = ["Weightlifting", "Cycling"];
-  $http.get('/sports').then((response) => {
-    vm.sports = response.data;
-  });
+import angular from 'angular'
+import 'angular-ui-router'
+
+angular.module('olympics', ["ui.router"])
+
+.config(($stateProvider, $urlRouterProvider) => {
+  $urlRouterProvider.otherwise('/sports')
+
+  $stateProvider
+  .state('sports', {
+    url: '/sports',
+    templateUrl: 'sports/sports-nav.html',
+    resolve:{
+     sportsService: function($http){
+       return $http.get('/sports');
+      }
+    },
+    controller: function(sportsService){
+      this.sports =  sportsService.data;
+    },
+    controllerAs: 'sportsCtrl'
+  })
+  .state('sports.medals', {
+    url: '/:sportName',
+    templateUrl: 'sports/sports-medals.html',
+    resolve: {
+      sportsService: function($q){
+        return $q((resolve,reject)=> {
+          let sport = {
+            "name": "Cycling",
+            "goldMedals": [{
+              "division": "Men's Sprint",
+              "country": "UK",
+              "year": 2012
+            }, {
+              "division": "Women's Sprint",
+              "country": "Australia",
+              "year": 2012
+            }]
+          };
+          resolve({data: sport});
+        })
+      }
+    },
+    controller: function(sportsService){
+      this.sport = sportsService.data;
+    },
+    controllerAs: 'sportCtrl'
+  })
 })
